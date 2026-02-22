@@ -1,84 +1,44 @@
 <script>
-	import { devices, volumes, error } from '$lib/sonos';
+	import { devices, discovering } from '$lib/sonos';
 </script>
 
-<div class="space-y-4">
+<div class="space-y-6">
 	<div>
-		<h2 class="mb-4 text-xl font-bold text-surface-200">Connected Speakers</h2>
-		{#if $error}
-			<div class="mb-4 rounded border border-error-500 bg-error-900 p-4 text-error-200">
-				{$error}
-			</div>
-		{/if}
+		<h1 class="mb-6 text-3xl font-bold text-surface-100">Sonos Controller</h1>
+		<p class="mb-4 text-surface-400">Welcome to your desktop Sonos controller app.</p>
+	</div>
 
-		{#if $devices.length === 0}
-			<div class="rounded border border-dashed border-surface-700 p-8 text-center">
-				<p class="text-surface-400">No speakers discovered yet</p>
-				<p class="mt-2 text-sm text-surface-500">Go to the DISCOVER tab to scan your network</p>
-			</div>
-		{:else}
-			<div class="space-y-3">
-				{#each $devices as device (device.uuid)}
-					<div
-						class="rounded border border-surface-800 bg-surface-900 p-4 transition-all hover:border-surface-700 hover:bg-surface-800"
-					>
-						<div class="mb-3 flex items-start justify-between">
-							<div>
-								<h3 class="font-semibold text-surface-100">{device.name}</h3>
-								{#if device.groupName}
-									<p class="text-xs text-surface-500">{device.groupName}</p>
-								{/if}
-								<p class="text-xs text-surface-600">{device.host}</p>
-							</div>
-						</div>
+	<div class="grid gap-4">
+		<a
+			href="/#/devices"
+			class="rounded border border-surface-800 bg-surface-900 p-6 transition-all hover:border-primary-500 hover:bg-surface-800"
+		>
+			<h2 class="mb-2 text-xl font-semibold text-surface-100">🔊 Devices</h2>
+			<p class="text-sm text-surface-400">Control your connected speakers and manage volume</p>
+			{#if $devices.length > 0}
+				<p class="mt-3 text-xs text-primary-400">
+					{$devices.length} speaker{$devices.length !== 1 ? 's' : ''} available
+				</p>
+			{/if}
+		</a>
 
-						<div class="mb-3 flex gap-1">
-							<button
-								onclick={() => window.sonos.previous(device.host)}
-								class="flex-1 rounded bg-surface-800 px-2 py-1.5 text-xs font-medium text-surface-300 transition-colors hover:bg-surface-700"
-							>
-								⏮
-							</button>
-							<button
-								onclick={() => window.sonos.play(device.host)}
-								class="flex-1 rounded bg-success-900 px-2 py-1.5 text-xs font-medium text-success-300 transition-colors hover:bg-success-800"
-							>
-								▶
-							</button>
-							<button
-								onclick={() => window.sonos.pause(device.host)}
-								class="flex-1 rounded bg-warning-900 px-2 py-1.5 text-xs font-medium text-warning-300 transition-colors hover:bg-warning-800"
-							>
-								⏸
-							</button>
-							<button
-								onclick={() => window.sonos.next(device.host)}
-								class="flex-1 rounded bg-surface-800 px-2 py-1.5 text-xs font-medium text-surface-300 transition-colors hover:bg-surface-700"
-							>
-								⏭
-							</button>
-						</div>
+		<a
+			href="/#/discover"
+			class="rounded border border-surface-800 bg-surface-900 p-6 transition-all hover:border-primary-500 hover:bg-surface-800"
+		>
+			<h2 class="mb-2 text-xl font-semibold text-surface-100">🔍 Discover</h2>
+			<p class="text-sm text-surface-400">Scan your network for Sonos devices</p>
+			{#if $discovering}
+				<p class="mt-3 text-xs text-primary-400">Scanning...</p>
+			{/if}
+		</a>
 
-						<div class="flex items-center gap-3">
-							<span class="min-w-fit text-xs font-medium text-surface-400">VOL</span>
-							<input
-								type="range"
-								min="0"
-								max="100"
-								value={$volumes[device.host] ?? 50}
-								oninput={(e) => {
-									$volumes[device.host] = Number(e.currentTarget.value);
-									window.sonos.setVolume(device.host, Number(e.currentTarget.value));
-								}}
-								class="range flex-1"
-							/>
-							<span class="min-w-8 text-right text-xs font-mono text-surface-400">
-								{$volumes[device.host] ?? "–"}
-							</span>
-						</div>
-					</div>
-				{/each}
-			</div>
-		{/if}
+		<a
+			href="/#/settings"
+			class="rounded border border-surface-800 bg-surface-900 p-6 transition-all hover:border-primary-500 hover:bg-surface-800"
+		>
+			<h2 class="mb-2 text-xl font-semibold text-surface-100">⚙ Settings</h2>
+			<p class="text-sm text-surface-400">Configure app preferences and view system info</p>
+		</a>
 	</div>
 </div>

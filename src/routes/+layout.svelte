@@ -1,7 +1,8 @@
 <script>
 	import { page } from '$app/stores';
 
-	$: isDevices = !$page.url.hash || $page.url.hash === '#/' || $page.url.hash === '';
+	$: isHome = !$page.url.hash || $page.url.hash === '#/' || $page.url.hash === '';
+	$: isDevices = $page.url.hash.includes('/devices');
 	$: isDiscover = $page.url.hash.includes('/discover');
 	$: isSettings = $page.url.hash.includes('/settings');
 </script>
@@ -11,6 +12,16 @@
 	<div class="flex border-b border-surface-800 bg-surface-900">
 		<a
 			href="/"
+			class={`flex-1 border-b-2 px-4 py-3 text-center text-sm font-medium transition-all ${
+				isHome
+					? 'border-primary-500 text-primary-400'
+					: 'border-transparent text-surface-400 hover:text-surface-300'
+			}`}
+		>
+			HOME
+		</a>
+		<a
+			href="/#/devices"
 			class={`flex-1 border-b-2 px-4 py-3 text-center text-sm font-medium transition-all ${
 				isDevices
 					? 'border-primary-500 text-primary-400'
