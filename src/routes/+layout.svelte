@@ -1,5 +1,9 @@
 <script>
 	import { page } from '$app/stores';
+
+	$: isDevices = !$page.url.hash || $page.url.hash === '#/' || $page.url.hash === '';
+	$: isDiscover = $page.url.hash.includes('/discover');
+	$: isSettings = $page.url.hash.includes('/settings');
 </script>
 
 <div class="flex h-screen flex-col bg-surface-950">
@@ -8,7 +12,7 @@
 		<a
 			href="/"
 			class={`flex-1 border-b-2 px-4 py-3 text-center text-sm font-medium transition-all ${
-				!$page.url.pathname.includes('/discover') && !$page.url.pathname.includes('/settings')
+				isDevices
 					? 'border-primary-500 text-primary-400'
 					: 'border-transparent text-surface-400 hover:text-surface-300'
 			}`}
@@ -18,7 +22,7 @@
 		<a
 			href="/#/discover"
 			class={`flex-1 border-b-2 px-4 py-3 text-center text-sm font-medium transition-all ${
-				$page.url.pathname.includes('/discover')
+				isDiscover
 					? 'border-primary-500 text-primary-400'
 					: 'border-transparent text-surface-400 hover:text-surface-300'
 			}`}
@@ -28,7 +32,7 @@
 		<a
 			href="/#/settings"
 			class={`flex-1 border-b-2 px-4 py-3 text-center text-sm font-medium transition-all ${
-				$page.url.pathname.includes('/settings')
+				isSettings
 					? 'border-primary-500 text-primary-400'
 					: 'border-transparent text-surface-400 hover:text-surface-300'
 			}`}
