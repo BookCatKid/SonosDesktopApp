@@ -1,11 +1,14 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import path from "node:path";
 import started from "electron-squirrel-startup";
+import { SonosManager } from "@svrooij/sonos";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
   app.quit();
 }
+
+const manager = new SonosManager();
 
 const createWindow = () => {
   // Create the browser window.
@@ -55,5 +58,53 @@ app.on("activate", () => {
   }
 });
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
+ipcMain.handle("sonos:discover", async () => {
+  try {
+    await manager.InitializeWithDiscovery(10);
+    return manager.Devices.map((d) => ({
+      name: d.Name,
+      host: d.Host,
+      uuid: d.Uuid,
+      groupName: d.GroupName,
+    }));
+  } catch (err) {
+    throw new Error(`Discovery failed: ${err}`);
+  }
+});
+
+ipcMain.handle("sonos:play", async (_event, host: string) => {
+  const device = manager.Devices.find((d) => d.Host === host);
+  if (!device) throw new Error(`Device not found: ${host}`);
+  return device.Play();
+});
+
+ipcMain.handle("sonos:pause", async (_event, host: string) => {
+  const device = manager.Devices.find((d) => d.Host === host);
+  if (!device) throw new Error(`Device not found: ${host}`);
+  return device.Pause();
+});
+
+ipcMain.handle("sonos:next", async (_event, host: string) => {
+  const device = manager.Devices.find((d) => d.Host === host);
+  if (!device) throw new Error(`Device not found: ${host}`);
+  return device.Next();
+});
+
+ipcMain.handle("sonos:previous", async (_event, host: string) => {
+  const device = manager.Devices.find((d) => d.Host === host);
+  if (!device) throw new Error(`Device not found: ${host}`);
+  return device.Previous();
+});
+
+ipcMain.handle("sonos:setVolume", async (_event, host: string, volume: number) => {
+  const device = manager.Devices.find((d) => d.Host === host);
+  if (!device) throw new Error(`Device not found: ${host}`);
+  return device.SetVolume(volume);
+});
+
+ipcMain.handle("sonos:getVolume", async (_event, host: string) => {
+  const device = manager.Devices.find((d) => d.Host === host);
+  if (!device) throw new Error(`Device not found: ${host}`);
+  const response = await device.RenderingControlService.GetVolume({ InstanceID: 0, Channel: "Master" });
+  return response.CurrentVolume;
+});

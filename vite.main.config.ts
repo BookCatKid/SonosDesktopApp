@@ -9,5 +9,8 @@ export default defineConfig({
       entry: "electron/main.ts",
       fileName: "main",
     },
+    rollupOptions: {
+      external: ["@svrooij/sonos"],
+    },
   },
 });
