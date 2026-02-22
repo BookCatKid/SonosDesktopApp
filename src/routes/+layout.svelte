@@ -1,10 +1,16 @@
 <script>
 	import { page } from '$app/stores';
+	import { initializeEventListeners } from '$lib/sonos';
+	import { onMount } from 'svelte';
 
 	$: isHome = !$page.url.hash || $page.url.hash === '#/' || $page.url.hash === '';
 	$: isDevices = $page.url.hash.includes('/devices');
 	$: isDiscover = $page.url.hash.includes('/discover');
 	$: isSettings = $page.url.hash.includes('/settings');
+
+	onMount(() => {
+		initializeEventListeners();
+	});
 </script>
 
 <div class="flex h-screen flex-col bg-surface-950">

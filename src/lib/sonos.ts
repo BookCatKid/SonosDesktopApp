@@ -27,3 +27,12 @@ export async function handleVolumeChange(host, value) {
 	volumes.update(v => ({ ...v, [host]: value }));
 	await window.sonos.setVolume(host, value);
 }
+
+// Set up real-time event listeners
+export function initializeEventListeners() {
+    window.sonos.onDeviceStateChange((event) => {
+        if (event.state === 'volume') {
+            volumes.update(v => ({ ...v, [event.host]: event.value }));
+        }
+    });
+}

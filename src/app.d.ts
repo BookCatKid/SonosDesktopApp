@@ -17,6 +17,7 @@ declare global {
 		previous(host: string): Promise<boolean>;
 		setVolume(host: string, volume: number): Promise<boolean>;
 		getVolume(host: string): Promise<number>;
+		onDeviceStateChange(callback: (event: DeviceStateEvent) => void): void;
 	}
 
 	namespace App {

@@ -9,12 +9,13 @@ if (started) {
 }
 
 const manager = new SonosManager();
+let mainWindow: BrowserWindow | null = null;
 
 const createWindow = () => {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+  mainWindow = new BrowserWindow({
+    width: 1000,
+    height: 800,
     webPreferences: {
       preload: path.join(import.meta.dirname, "preload.js"),
     },
@@ -34,6 +35,28 @@ const createWindow = () => {
       ),
     );
   }
+};
+
+const setupDeviceListeners = () => {
+  manager.Devices.forEach((device) => {
+    console.log('Start listening for events from %s', device.Name);
+
+    device.Events.on('transportState', (value) => {
+      mainWindow?.webContents.send("sonos:device-state", {
+        host: device.Host,
+        state: "transportState",
+        value: value,
+      });
+    });
+
+    device.Events.on('volume', (value) => {
+      mainWindow?.webContents.send("sonos:device-state", {
+        host: device.Host,
+        state: "volume",
+        value: value,
+      });
+    });
+  });
 };
 
 // This method will be called when Electron has finished
@@ -61,6 +84,7 @@ app.on("activate", () => {
 ipcMain.handle("sonos:discover", async () => {
   try {
     await manager.InitializeWithDiscovery(10);
+    setupDeviceListeners();
     return manager.Devices.map((d) => ({
       name: d.Name,
       host: d.Host,
